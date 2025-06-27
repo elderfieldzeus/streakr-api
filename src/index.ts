@@ -46,4 +46,4 @@ Bun.serve({
   port: env.PORT
 })
 
-console.log(`Listening on http://localhost:${env.PORT}`)
+console.log(`Listening on port ${env.PORT}`)
