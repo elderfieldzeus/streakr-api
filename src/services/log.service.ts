@@ -1,9 +1,26 @@
 import prisma from "../config/prisma";
-import { AddLogInput, LogResponse, LogResponseSchema } from "../models/log.types";
+import { LogResponse, LogResponseSchema } from "../models/log.types";
 import { getActivityById } from "./activity.service";
 
-export const addLog = async (log: AddLogInput): Promise<LogResponse> => {
-    const activity = await getActivityById(log.activity_id);
+export const addLog = async (activity_id: number): Promise<LogResponse> => {
+    const today = new Date();
+
+    const existingLog = await prisma.log.findFirst({
+        where: {
+            date: {
+                gte: new Date(today.setHours(0, 0, 0, 0)),
+                lt: new Date(today.setHours(23, 59, 59, 999)),
+            },
+            activity_id,
+            deleted_at: null,
+        },
+    });
+
+    if (existingLog) {
+        throw new Error("Log for this activity already exists for today");
+    }
+
+    const activity = await getActivityById(activity_id);
 
     if (!activity) {
         throw new Error("Activity not found or has been deleted");
@@ -11,8 +28,7 @@ export const addLog = async (log: AddLogInput): Promise<LogResponse> => {
 
     const newLog = await prisma.log.create({
         data: {
-            date: log.date,
-            activity_id: log.activity_id,
+            activity_id: activity_id
         },
     });
 

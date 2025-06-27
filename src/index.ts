@@ -7,6 +7,8 @@ import env from './config/env'
 import { userRouter } from './routes/user.route'
 import cron from 'node-cron'
 import { checkActivityStatus, getAllActivities } from './services/activity.service'
+import { activityRouter } from './routes/activity.route'
+import { logRouter } from './routes/log.route'
 
 const app = new Hono().basePath('/api')
 
@@ -40,6 +42,8 @@ app.get('/jwt', jwtFilter, (c) => {
 
 app.route('/auth', authRouter);
 app.route('/user', userRouter);
+app.route('/activity', activityRouter);
+app.route('/log', logRouter);
 
 Bun.serve({
   fetch: app.fetch,
