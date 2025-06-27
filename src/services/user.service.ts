@@ -59,10 +59,13 @@ export const loginUser = async (userData: LoginUserInput): Promise<UserResponse>
 }
 
 export const updateUser = async (userId: number, userData: UpdateUserInput): Promise<UserResponse> => {
+    const hashedPassword = userData.password ? bcrypt.hashSync(userData.password, 10) : undefined;
+
     const user = await prisma.user.update({
         where: { id: userId },
         data: {
-            ...userData
+            ...userData,
+            ...(hashedPassword ? { password: hashedPassword } : {}),
         }
     });
 
