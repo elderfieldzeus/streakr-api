@@ -3,6 +3,7 @@ import { AddUserSchema, UpdateUserSchema } from "../models/user.types";
 import { sign } from "jsonwebtoken";
 import { addUser, deleteUser, loginUser, updateUser } from "../services/user.service";
 import env from "../config/env";
+import { generateJwt } from "../services/jwt.service";
 
 export const signup = async (c: Context) => {
     const body = await c.req.json();
@@ -14,7 +15,7 @@ export const signup = async (c: Context) => {
 
     try {
         const user = await addUser(userData.data);
-        const token = sign({ id: user.id }, env.JWT_SECRET);
+        const token = generateJwt(user.id.toString());
 
         return c.json({ user, token }, 201);
     } catch (error: any) {
@@ -32,7 +33,7 @@ export const login = async (c: Context) => {
 
     try {
         const user = await loginUser(userData.data); // Assuming addUser can handle login logic
-        const token = sign({ id: user.id }, env.JWT_SECRET);
+        const token = generateJwt(user.id.toString());
 
         return c.json({ user, token }, 200);
     } catch (error: any) {

@@ -45,7 +45,7 @@ export const loginUser = async (userData: LoginUserInput): Promise<UserResponse>
         }
 
         // Here you would typically compare the hashed password with the provided password
-        if (!bcrypt.compareSync(password, user.password)) { // Replace with proper password hashing comparison
+        if (user.password == null || !bcrypt.compareSync(password, user.password)) { // Replace with proper password hashing comparison
             throw new Error("Invalid credentials");
         }
 
