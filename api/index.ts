@@ -1,10 +1,18 @@
 import { Hono } from 'hono'
 import { handle } from 'hono/vercel'
+import { cors } from 'hono/cors'
 
 const app = new Hono().basePath('/api')
 
-app.get('/', (c) => {
-  return c.json({ message: "Congrats! You've deployed Hono to Vercel" })
+app.use('*', cors({
+  origin: '*', 
+  allowMethods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  credentials: true, // Allow credentials
+  allowHeaders: ['Content-Type', 'Authorization'],
+}))
+
+app.get('/health', (c) => {
+  return c.json({ message: "Healthy!" })
 })
 
 const handler = handle(app);
@@ -12,5 +20,4 @@ const handler = handle(app);
 export const GET = handler;
 export const POST = handler;
 export const PATCH = handler;
-export const PUT = handler;
-export const OPTIONS = handler;
+export const DELETE = handler;
