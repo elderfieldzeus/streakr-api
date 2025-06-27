@@ -26,7 +26,7 @@ export const UserResponseSchema = z.object({
     id: z.number().int('Invalid user ID').positive('User ID must be a positive integer'),
     username: z.string(),
     email: z.string().email('Invalid email address'),
-    createdAt: z.string().datetime(),
+    created_at: z.date().optional(),
 });
 
 export type AddUserInput = z.infer<typeof AddUserSchema>;

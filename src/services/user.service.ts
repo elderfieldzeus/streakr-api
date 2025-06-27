@@ -1,27 +1,36 @@
 import prisma from "../config/prisma";
-import { AddUserInput, UserResponse, UserResponseSchema } from "../models/user.types";
+import { AddUserInput, LoginUserInput, UserResponse, UserResponseSchema } from "../models/user.types";
+import * as bcrypt from "bcryptjs";
 
-export const signUpUser = async (userData: AddUserInput): Promise<UserResponse> => {
+export const addUser = async (userData: AddUserInput): Promise<UserResponse> => {
+    const existingUser = await prisma.user.findFirst({
+        where: { email: userData.email }
+    });
+
+    if (existingUser) {
+        throw new Error("User with this email already exists");
+    }
+
+    const hashedPassword = bcrypt.hashSync(userData.password, 10); // Hash the password before storing it
+
     const user = prisma.user.create({
         data: {
             username: userData.username,
             email: userData.email,
-            password: userData.password, // Ensure to hash the password before storing it in production
+            password: hashedPassword, // Ensure to hash the password before storing it in production
         },
     });
 
-    const retUser = UserResponseSchema.safeParse(await user);
+    const retUser = UserResponseSchema.parse(await user);
 
-    if (!retUser.success) {
-        throw new Error("Invalid user data");
-    }
-
-    return retUser.data;
+    return retUser;
 }
 
-export const loginUser = async (email: string, password: string): Promise<UserResponse> => {
+export const loginUser = async (userData: LoginUserInput): Promise<UserResponse> => {
+    const { email, password } = userData;
+    
     try {
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
             where: { email }
         });
 
@@ -30,19 +39,15 @@ export const loginUser = async (email: string, password: string): Promise<UserRe
         }
 
         // Here you would typically compare the hashed password with the provided password
-        if (user.password !== password) { // Replace with proper password hashing comparison
+        if (!bcrypt.compareSync(password, user.password)) { // Replace with proper password hashing comparison
             throw new Error("Invalid credentials");
         }
 
-        const retUser = UserResponseSchema.safeParse(user);
+        const retUser = UserResponseSchema.parse(user);
 
-        if (!retUser.success) {
-            throw new Error("Invalid user data");
-        }
-
-        return retUser.data;
+        return retUser;
     }
     catch (error) {
-        throw new Error("Login failed");
+        throw new Error(error instanceof Error ? error.message : "An error occurred during login");
     }
 }

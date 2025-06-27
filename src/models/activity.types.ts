@@ -26,7 +26,7 @@ const ActivityResponseSchema = z.object({
     is_private: z.boolean().optional(),
     user_id: z.number().int('Invalid user ID').positive('User ID must be a positive integer'),
     description: z.string().optional(),
-    createdAt: z.string().datetime(),
+    created_at: z.date().optional(),
 });
 
 export type AddActivityInput = z.infer<typeof AddActivitySchema>;
