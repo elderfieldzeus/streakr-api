@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { handle } from 'hono/vercel'
 import { cors } from 'hono/cors'
+import { userRouter } from './routes/user.route'
 
 const app = new Hono().basePath('/api')
 
@@ -14,6 +15,8 @@ app.use('*', cors({
 app.get('/health', (c) => {
   return c.json({ message: "Healthy!" })
 })
+
+app.route('/users', userRouter); 
 
 const handler = handle(app);
 
