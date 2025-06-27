@@ -24,5 +24,6 @@ jobs:
             bun install
             bun run db:migrate
             bun run db:generate
+            bun run build
             bunx pm2 delete streakr
-            bun pm2 start --name streakr -i 2
+            bunx pm2 start bun --name streakr -- run start
