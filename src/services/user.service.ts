@@ -1,10 +1,13 @@
 import prisma from "../config/prisma";
-import { AddUserInput, LoginUserInput, UserResponse, UserResponseSchema } from "../models/user.types";
+import { AddUserInput, LoginUserInput, UpdateUserInput, UserResponse, UserResponseSchema } from "../models/user.types";
 import * as bcrypt from "bcryptjs";
 
 export const addUser = async (userData: AddUserInput): Promise<UserResponse> => {
     const existingUser = await prisma.user.findFirst({
-        where: { email: userData.email }
+        where: { 
+            email: userData.email,
+            deleted_at: null
+        }
     });
 
     if (existingUser) {
@@ -31,7 +34,10 @@ export const loginUser = async (userData: LoginUserInput): Promise<UserResponse>
     
     try {
         const user = await prisma.user.findFirst({
-            where: { email }
+            where: { 
+                email,
+                deleted_at: null
+            }
         });
 
         if (!user) {
@@ -50,4 +56,32 @@ export const loginUser = async (userData: LoginUserInput): Promise<UserResponse>
     catch (error) {
         throw new Error(error instanceof Error ? error.message : "An error occurred during login");
     }
+}
+
+export const updateUser = async (userId: number, userData: UpdateUserInput): Promise<UserResponse> => {
+    const user = await prisma.user.update({
+        where: { id: userId },
+        data: {
+            ...userData
+        }
+    });
+
+    const retUser = UserResponseSchema.parse(user);
+
+    return retUser;
+}
+
+export const deleteUser = async (userId: number): Promise<UserResponse> => {
+    const user = await prisma.user.update({
+        where: { id: userId },
+        data: { deleted_at: new Date() }, // Soft delete
+    });
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const retUser = UserResponseSchema.parse(user);
+
+    return retUser;
 }

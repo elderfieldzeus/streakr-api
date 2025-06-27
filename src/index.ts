@@ -4,6 +4,7 @@ import { cors } from 'hono/cors'
 import { authRouter } from './routes/auth.route'
 import { jwtFilter } from './middlewares/jwt.middleware'
 import env from './config/env'
+import { userRouter } from './routes/user.route'
 
 const app = new Hono().basePath('/api')
 
@@ -23,6 +24,7 @@ app.get('/jwt', jwtFilter, (c) => {
 });
 
 app.route('/auth', authRouter);
+app.route('/user', userRouter);
 
 Bun.serve({
   fetch: app.fetch,
