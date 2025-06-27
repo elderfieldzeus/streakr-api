@@ -33,7 +33,6 @@ model Image {
 model Log {
   id           Int       @id @default(autoincrement())
   date         DateTime? @default(now())
-  is_continued Boolean?  @default(false)
   activity_id  Int?
   created_at   DateTime  @default(now())
   deleted_at   DateTime?

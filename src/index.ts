@@ -5,8 +5,23 @@ import { authRouter } from './routes/auth.route'
 import { jwtFilter } from './middlewares/jwt.middleware'
 import env from './config/env'
 import { userRouter } from './routes/user.route'
+import cron from 'node-cron'
+import { checkActivityStatus, getAllActivities } from './services/activity.service'
 
 const app = new Hono().basePath('/api')
+
+// Checks the status of activities every day at midnight, resets streak to 0 if no logs are found
+cron.schedule('0 0 * * *', async () => {
+  const activities = await getAllActivities();
+
+  activities.forEach(async (activity) => {
+    try {
+      await checkActivityStatus(activity.id);
+    } catch (error) {
+      console.error(`Error checking activity status for ID ${activity.id}:`, error);
+    }
+  });
+});
 
 app.use('*', cors({
   origin: '*', 

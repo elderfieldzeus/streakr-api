@@ -58,6 +58,19 @@ export const loginUser = async (userData: LoginUserInput): Promise<UserResponse>
     }
 }
 
+export const getUserById = async (userId: number): Promise<UserResponse | null> => {
+    const user = await prisma.user.findFirst({
+        where: {
+            id: userId,
+            deleted_at: null
+        }
+    });
+    if (!user) {
+        return null;
+    }
+    return UserResponseSchema.parse(user);
+}
+
 export const updateUser = async (userId: number, userData: UpdateUserInput): Promise<UserResponse> => {
     const hashedPassword = userData.password ? bcrypt.hashSync(userData.password, 10) : undefined;
 
