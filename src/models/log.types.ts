@@ -15,7 +15,7 @@ export const LogResponseSchema = z.object({
     date: z.string().datetime('Invalid date format'),
     is_continued: z.boolean().optional(),
     activity_id: z.number().int('Invalid activity ID').positive('Activity ID must be a positive integer'),
-    createdAt: z.string().datetime()
+    created_at: z.date().optional(),
 });
 
 export type AddLogInput = z.infer<typeof AddLogSchema>;

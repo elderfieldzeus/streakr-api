@@ -16,7 +16,7 @@ export const ImageResponseSchema = z.object({
     name: z.string(),
     url: z.string().url('Invalid URL format'),
     log_id: z.number().int('Invalid log ID').positive('Log ID must be a positive integer'),
-    createdAt: z.string().datetime(),
+    created_at: z.date().optional(),
 });
 
 export type AddImageInput = z.infer<typeof AddImageSchema>;
