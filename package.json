@@ -3,7 +3,9 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "build": "bun build ./src/index.ts --outdir dist --target bun",
-    "start": "bun run ./dist/index.js"
+    "start": "bun run ./dist/index.js",
+    "db:migrate": "bunx prisma migrate dev --name init",
+    "db:generate": "bunx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",

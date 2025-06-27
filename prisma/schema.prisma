@@ -3,51 +3,50 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "sqlite"
+  url      = "file:./sqlite.db"
 }
 
 model Activity {
-  id          BigInt    @id @default(autoincrement())
-  name        String?   @db.VarChar
-  description String?   @db.VarChar
-  counter     BigInt?   @default(0)
+  id          Int       @id @default(autoincrement())
+  name        String?
+  description String?
+  counter     Int?      @default(0)
   is_private  Boolean?  @default(false)
-  created_at  DateTime  @default(now()) @db.Timestamptz(6)
-  deleted_at  DateTime? @db.Timestamp(6)
+  created_at  DateTime  @default(now())
+  deleted_at  DateTime?
   user_id     Int?
-  User        User?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User        User?     @relation(fields: [user_id], references: [id])
   Log         Log[]
 }
 
 model Image {
-  id         BigInt    @id @default(autoincrement())
-  name       String?   @db.VarChar
-  url        String?   @db.VarChar
-  log_id     BigInt?
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  deleted_at DateTime? @db.Timestamp(6)
-  Log        Log?      @relation(fields: [log_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id         Int       @id @default(autoincrement())
+  name       String?
+  url        String?
+  log_id     Int?
+  created_at DateTime  @default(now())
+  deleted_at DateTime?
+  Log        Log?      @relation(fields: [log_id], references: [id])
 }
 
 model Log {
-  id           BigInt    @id @default(autoincrement())
-  date         DateTime? @default(now()) @db.Timestamp(6)
+  id           Int       @id @default(autoincrement())
+  date         DateTime? @default(now())
   is_continued Boolean?  @default(false)
-  activity_id  BigInt?
-  created_at   DateTime  @default(now()) @db.Timestamptz(6)
-  deleted_at   DateTime? @db.Timestamp(6)
+  activity_id  Int?
+  created_at   DateTime  @default(now())
+  deleted_at   DateTime?
   Image        Image[]
-  Activity     Activity? @relation(fields: [activity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Activity     Activity? @relation(fields: [activity_id], references: [id])
 }
 
 model User {
-  id         Int        @id @default(autoincrement())
-  username   String?    @db.VarChar
-  email      String?    @unique @db.VarChar
-  password   String?    @db.VarChar
-  created_at DateTime   @default(now()) @db.Timestamptz(6)
-  deleted_at DateTime?  @db.Timestamp(6)
+  id         Int       @id @default(autoincrement())
+  username   String?   @unique
+  email      String?   @unique
+  password   String?
+  created_at DateTime  @default(now())
+  deleted_at DateTime?
   Activity   Activity[]
 }
