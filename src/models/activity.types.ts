@@ -4,7 +4,6 @@ export const AddActivitySchema = z.object({
     name: z.string().min(1, 'Activity name is required'),
     description: z.string().optional(),
     is_private: z.boolean().optional(),
-    count: z.number().int('Counter must be an integer').nonnegative('Counter cannot be negative').default(0),
     user_id: z.number().int('Invalid user ID').positive('User ID must be a positive integer')
 });
 

@@ -40,12 +40,7 @@ export const loginUser = async (userData: LoginUserInput): Promise<UserResponse>
             }
         });
 
-        if (!user) {
-            throw new Error("User not found");
-        }
-
-        // Here you would typically compare the hashed password with the provided password
-        if (user.password == null || !bcrypt.compareSync(password, user.password)) { // Replace with proper password hashing comparison
+        if (!user || user.password == null || !bcrypt.compareSync(password, user.password)) { // Replace with proper password hashing comparison
             throw new Error("Invalid credentials");
         }
 

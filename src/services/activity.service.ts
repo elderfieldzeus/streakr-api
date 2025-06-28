@@ -14,13 +14,14 @@ export const checkActivityStatus = async (activity_id: number): Promise<Activity
         throw new Error("Activity not found or has been deleted");
     }
 
-    const yesterday = (new Date()).getDate() - 1;
+    const yesterday = new Date(Date.now() - 1000 * 60 * 60 * 24);
 
     const yesterdaysLog = await prisma.log.findFirst({
         where: {
             activity_id: activity.id,
             date: {
-                gte: new Date(new Date().setDate(yesterday)),
+                gte: yesterday,
+                lt: new Date()
             },
             deleted_at: null,
         },
